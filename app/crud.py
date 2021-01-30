@@ -41,6 +41,21 @@ def get_movie(db: Session, movie_id: int):
     return movie
 
 
+def delete_movie(db: Session, movie_id: int):
+    obj = db.query(models.Movie).filter(models.Movie.id == movie_id)
+    first_obj = obj.first()
+    if first_obj:
+        first_obj.genres.clear()
+        db.add(first_obj)
+        db.commit()
+
+        obj.delete()
+        db.commit()
+
+        return True
+    return False
+
+
 def create_movie(db: Session, movie: schemas.MovieCreate):
     new_movie = models.Movie(name=movie.name,
         director=movie.director,

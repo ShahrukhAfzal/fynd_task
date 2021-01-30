@@ -64,3 +64,11 @@ def create_movies(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
     new_movie = crud.create_movie(db, movie=movie)
 
     return new_movie
+
+
+@app.post("/movies/{movie_id}")
+def delete_movies(movie_id: int, db: Session = Depends(get_db)):
+    is_deleted = crud.delete_movie(db, movie_id)
+    if is_deleted:
+        return "Deleted successfully"
+    return "No such object exists"
