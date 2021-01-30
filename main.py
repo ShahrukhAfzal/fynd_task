@@ -51,13 +51,15 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 # MOVIES
 @app.get("/movies/")
 def read_movies(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_movies(db, skip, limit)
-
+    movies = crud.get_movies(db, skip, limit)
+    return movies
 
 @app.get("/movies/{movie_id}")
 def read_movies(movie_id: int, db: Session = Depends(get_db)):
-    return crud.get_movie(db, movie_id)
-
+    movie = crud.get_movie(db, movie_id)
+    if movie:
+        return movie
+    return "No movie exists with this id."
 
 @app.post("/movies/", response_model=schemas.MovieCreate)
 def create_movies(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
