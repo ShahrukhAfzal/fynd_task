@@ -46,14 +46,21 @@ class Genre(GenreBase):
 class MovieBase(BaseModel):
     name: str
     director: str
-    imdb_score: str
+    imdb_score: float
 
     class Config:
         orm_mode = True
 
 
 class MovieCreate(MovieBase):
-    genre: list = []
+    genre: List[str] = []
+
+
+class MovieUpdate(BaseModel):
+    name: Optional[str] = None
+    director: Optional[str] = None
+    imdb_score: Optional[float] = None
+    genre: List[str] = []
 
 
 class Movie(MovieBase):

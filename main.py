@@ -74,3 +74,13 @@ def delete_movies(movie_id: int, db: Session = Depends(get_db)):
     if is_deleted:
         return "Deleted successfully"
     return "No such object exists"
+
+
+@app.put("/movies/{movie_id}", response_model=schemas.MovieUpdate)
+def update_movies(movie_id: int,
+                movie: schemas.MovieUpdate,
+                db: Session = Depends(get_db)):
+
+    return crud.update_movie(db, movie_id, movie)
+
+

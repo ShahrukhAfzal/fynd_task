@@ -73,6 +73,28 @@ def create_movie(db: Session, movie: schemas.MovieCreate):
     return new_movie
 
 
+def update_movie(db: Session, movie_id: int, update_movie: schemas.MovieUpdate):
+    obj = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
+    if obj:
+        new_name = update_movie.name
+        new_director = update_movie.director
+        new_imdb_score = update_movie.imdb_score
+        new_genre = update_movie.genre
+
+        if new_name:
+            obj.name = new_name
+        if new_director:
+            obj.director = new_director
+        if new_imdb_score:
+            obj.imdb_score = new_imdb_score
+
+        db.add(obj)
+        db.commit()
+
+        return update_movie
+
+    return None
+
 def create_genre(db, genres, new_movie):
 
     for genre_name in genres:
