@@ -37,8 +37,9 @@ def get_movie(db: Session, movie_id: int):
     movie = db.query(models.Movie).filter(models.Movie.id == movie_id).first()
     if movie:
         movie.genres
+        return movie
 
-    return movie
+    return None
 
 
 def delete_movie(db: Session, movie_id: int):
