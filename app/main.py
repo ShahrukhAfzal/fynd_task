@@ -124,7 +124,7 @@ def create_movies(movie: schemas.MovieCreate,
     return new_movie
 
 
-@app.post("/movies/{movie_id}")
+@app.delete("/movies/{movie_id}")
 def delete_movies(movie_id: int,
                   db: Session = Depends(get_db),
                   token: str = Depends(oauth2_scheme)):
