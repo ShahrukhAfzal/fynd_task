@@ -108,3 +108,14 @@ def create_genre(db, genres, new_movie):
 
         genre.movies.append(new_movie)
         db.commit()
+
+
+def authenticate_user(db: Session, username: str, password: str):
+    user = db.query(models.User).filter(
+        models.User.email==username,
+        models.User.password==password
+    )
+    if user.first():
+        return user
+
+    return False

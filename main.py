@@ -1,6 +1,8 @@
+import jwt
+
 from typing import List
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 
 from app import schemas
 from app.models import Base
@@ -8,6 +10,11 @@ from app import crud
 
 from app.database import SessionLocal, engine
 from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+JWT_SECRET = 'my_secret_key'
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,6 +28,26 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@app.post('/token')
+async def generate_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user_obj = crud.authenticate_user(db, form_data.username, form_data.password)
+
+    if not user_obj:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Invalid username or password'
+        )
+
+    user_obj = user_obj.first()
+    user_obj_dict = {
+        'user_name': user_obj.email,
+        'password': user_obj.password
+    }
+    token = jwt.encode(user_obj_dict, JWT_SECRET)
+
+    return {'access_token' : token, 'token_type' : 'bearer'}
 
 
 #  USER
