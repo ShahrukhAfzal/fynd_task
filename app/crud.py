@@ -59,8 +59,8 @@ def delete_movie(db: Session, movie_id: int):
 
 def create_movie(db: Session, movie: schemas.MovieCreate):
     new_movie = models.Movie(name=movie.name,
-        director=movie.director,
-        imdb_score=movie.imdb_score)
+                             director=movie.director,
+                             imdb_score=movie.imdb_score)
 
     db.add(new_movie)
     genres = movie.genre
@@ -95,8 +95,8 @@ def update_movie(db: Session, movie_id: int, update_movie: schemas.MovieUpdate):
 
     return None
 
-def create_genre(db, genres, new_movie):
 
+def create_genre(db, genres, new_movie):
     for genre_name in genres:
         genre = db.query(models.Genre).filter(
             models.Genre.name == genre_name).first()
@@ -108,4 +108,3 @@ def create_genre(db, genres, new_movie):
 
         genre.movies.append(new_movie)
         db.commit()
-
