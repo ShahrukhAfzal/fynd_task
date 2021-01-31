@@ -30,7 +30,7 @@ class Movie(Base):
     name = Column(String)
     director = Column(String)
     imdb_score = Column(Float)
-    popularity = Column(String)
+    popularity = Column(Float)
     genres = relationship('Genre', secondary=MOVIE_GENRE, backref='movies')
 
 
