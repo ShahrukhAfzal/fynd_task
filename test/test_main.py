@@ -27,7 +27,7 @@ app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 
-def test_read_main():
+def test_root():
     response = client.get('/')
     assert response.status_code == 200
 
@@ -43,7 +43,7 @@ def test_create_user():
     assert response.status_code == 200
 
 
-def test_get_user_without_auth():
+def test_get_user():
     response = client.get('/users/')
 
     assert response.status_code == 401
@@ -51,10 +51,11 @@ def test_get_user_without_auth():
 
 def test_get_movies():
     response = client.get('/movies')
+
     assert response.status_code == 200
 
 
-def test_create_movies_without_auth():
+def test_create_movies():
     response = client.post('/movies/',
         json={
             "popularity": 83.0,
@@ -72,19 +73,19 @@ def test_create_movies_without_auth():
     assert response.status_code == 401
 
 
-def test_create_movies_with_auth():
-    response = client.post('/movies/',
+def test_update_movies():
+    response = client.put('/movies/1',
         json={
-            "popularity": 83.0,
             "director": "Victor Fleming",
-            "genre": [
-              "Adventure",
-              " Family",
-              " Fantasy",
-              " Musical"
-            ],
             "imdb_score": 8.3,
-            "name": "The Wizard of Oz"
+            "name": "The Wizard of Oz",
+            "genre": []
         })
+
+    assert response.status_code == 401
+
+
+def test_delete_movies():
+    response = client.delete('/movies/3')
 
     assert response.status_code == 401
