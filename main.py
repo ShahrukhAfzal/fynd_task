@@ -78,7 +78,8 @@ def create_user(user: schemas.UserCreate,
 
 
 @app.get("/users/", )
-def read_users(skip: int = 0, limit: int = 100,
+def read_users(skip: int = 0,
+			   limit: int = 10,
                db: Session = Depends(get_db),
                token: str = Depends(oauth2_scheme)):
     users = crud.get_users(db, skip=skip, limit=limit)
@@ -98,7 +99,7 @@ def read_user(user_id: int,
 # MOVIES
 @app.get("/movies/")
 def read_movies(skip: int = 0,
-                limit: int = 100,
+                limit: int = 10,
                 search_by_name: str = None,
                 db: Session = Depends(get_db)):
     movies = crud.get_movies(db, search_by_name, skip, limit)
