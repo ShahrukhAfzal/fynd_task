@@ -69,7 +69,8 @@ def delete_movie(db: Session, movie_id: int):
 def create_movie(db: Session, movie: MovieCreate):
     new_movie = Movie(name=movie.name,
                       director=movie.director,
-                      imdb_score=movie.imdb_score)
+                      imdb_score=movie.imdb_score,
+                      popularity=movie.popularity)
 
     db.add(new_movie)
     genres = movie.genre
