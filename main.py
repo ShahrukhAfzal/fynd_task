@@ -15,7 +15,6 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 JWT_SECRET = 'my_secret_key'
 
-
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -31,7 +30,11 @@ def get_db():
 
 
 @app.post('/token')
-async def generate_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def generate_token(form_data: OAuth2PasswordRequestForm = Depends(),
+                   db: Session = Depends(get_db)):
+    """
+    use to access the api
+    """
     user_obj = crud.authenticate_user(db, form_data.username, form_data.password)
 
     if not user_obj:
@@ -47,12 +50,13 @@ async def generate_token(form_data: OAuth2PasswordRequestForm = Depends(), db: S
     }
     token = jwt.encode(user_obj_dict, JWT_SECRET)
 
-    return {'access_token' : token, 'token_type' : 'bearer'}
+    return {'access_token': token, 'token_type': 'bearer'}
 
 
 #  USER
 @app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate,
+                db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -61,14 +65,18 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return created_user
 
 
-@app.get("/users/", response_model=List[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+@app.get("/users/", )
+def read_users(skip: int = 0, limit: int = 100,
+               db: Session = Depends(get_db),
+               token: str = Depends(oauth2_scheme)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
 
 @app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
+def read_user(user_id: int,
+              db: Session = Depends(get_db),
+              token: str = Depends(oauth2_scheme)):
     db_user = crud.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -77,26 +85,35 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 # MOVIES
 @app.get("/movies/")
-def read_movies(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_movies(skip: int = 0,
+                limit: int = 100,
+                db: Session = Depends(get_db)):
     movies = crud.get_movies(db, skip, limit)
     return movies
 
+
 @app.get("/movies/{movie_id}")
-def read_movies(movie_id: int, db: Session = Depends(get_db)):
+def read_movies(movie_id: int,
+                db: Session = Depends(get_db)):
     movie = crud.get_movie(db, movie_id)
     if movie:
         return movie
     return "No movie exists with this id."
 
+
 @app.post("/movies/", response_model=schemas.MovieCreate)
-def create_movies(movie: schemas.MovieCreate, db: Session = Depends(get_db)):
+def create_movies(movie: schemas.MovieCreate,
+                  db: Session = Depends(get_db),
+                  token: str = Depends(oauth2_scheme)):
     new_movie = crud.create_movie(db, movie=movie)
 
     return new_movie
 
 
 @app.post("/movies/{movie_id}")
-def delete_movies(movie_id: int, db: Session = Depends(get_db)):
+def delete_movies(movie_id: int,
+                  db: Session = Depends(get_db),
+                  token: str = Depends(oauth2_scheme)):
     is_deleted = crud.delete_movie(db, movie_id)
     if is_deleted:
         return "Deleted successfully"
@@ -105,9 +122,8 @@ def delete_movies(movie_id: int, db: Session = Depends(get_db)):
 
 @app.put("/movies/{movie_id}", response_model=schemas.MovieUpdate)
 def update_movies(movie_id: int,
-                movie: schemas.MovieUpdate,
-                db: Session = Depends(get_db)):
-
+                  movie: schemas.MovieUpdate,
+                  db: Session = Depends(get_db),
+                  token: str = Depends(oauth2_scheme)):
     return crud.update_movie(db, movie_id, movie)
-
 
