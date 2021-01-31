@@ -25,8 +25,17 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 # MOVIES
-def get_movies(db: Session, skip: int = 0, limit: int = 100):
-    movies_data = db.query(models.Movie).offset(skip).limit(limit).all()
+def get_movies(db: Session,
+               search_by_name: str = None,
+               skip: int = 0,
+               limit: int = 100):
+
+    if search_by_name:
+        search = f"%{search_by_name}%"
+        movies_data = db.query(models.Movie).filter(models.Movie.name.like(search)).offset(skip).limit(limit).all()
+    else:
+        movies_data = db.query(models.Movie).offset(skip).limit(limit).all()
+
     for movie in movies_data:
         movie.genres
 

@@ -87,8 +87,9 @@ def read_user(user_id: int,
 @app.get("/movies/")
 def read_movies(skip: int = 0,
                 limit: int = 100,
+                search_by_name: str = None,
                 db: Session = Depends(get_db)):
-    movies = crud.get_movies(db, skip, limit)
+    movies = crud.get_movies(db, search_by_name, skip, limit)
     return movies
 
 
