@@ -47,6 +47,7 @@ class MovieBase(BaseModel):
     name: str
     director: str
     imdb_score: float
+    popularity: float
 
     class Config:
         orm_mode = True
