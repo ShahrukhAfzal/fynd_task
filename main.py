@@ -3,6 +3,7 @@ import jwt
 from typing import List
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.responses import HTMLResponse
 
 from app import schemas
 from app.models import Base
@@ -27,6 +28,17 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@app.get('/')
+def welcome():
+    html = """
+    <center>
+        <h1>Welcome to our IMDB app</h1>
+        For using our APIs please refer <a href="docs">API Docs</a>
+    </center>
+    """
+    return HTMLResponse(html)
 
 
 @app.post('/token')
